@@ -5505,7 +5505,13 @@ public class RIL extends BaseCommands implements CommandsInterface {
     /** Convert HAL 1.0 Signal Strength to android SignalStrength */
     @VisibleForTesting
     public static SignalStrength convertHalSignalStrength(
-            android.hardware.radio.V1_0.SignalStrength signalStrength) {
+            android.hardware.radio.V1_0.SignalStrength signalStrength, int phoneId) {
+	Boolean prop = android.os.SystemProperties.getBoolean("ro.telephony.isHisiRIL", false);
+
+        if (prop && phoneId >= 0) {
+            return convertHalSignalStrengthHuawei(signalStrength, phoneId);
+        }
+
         int tdscdmaRscp_1_2 = 255; // 255 is the value for unknown/unreported ASU.
         // The HAL 1.0 range is 25..120; the ASU/ HAL 1.2 range is 0..96;
         // yes, this means the range in 1.0 cannot express -24dBm = 96
